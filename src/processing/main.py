@@ -174,6 +174,7 @@ def get_separated_seismic_waves(
     event_lon: float,
     event_depth: float,
     event_time: str,
+    channel: str = "BH*",
 ):
     """
     Separates P and S waves into L, Q, T components for a specific seismic event.
@@ -187,7 +188,7 @@ def get_separated_seismic_waves(
             network=network,
             station=station,
             location=location,
-            channel="BH*",
+            channel=channel,
             level="response",
         )
     except Exception as e:
