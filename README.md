@@ -27,7 +27,7 @@ The core functionality includes fetching seismic data from global networks, sepa
 1. Clone the repository:
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/abdo1rahman/seismic_analysis.git
    cd dsp-project
    ```
 
