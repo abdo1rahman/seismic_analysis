@@ -73,7 +73,7 @@ This will:
 The `processing` module contains functions for data retrieval and signal processing:
 
 ```python
-from processing import get_separated_seismic_waves, calculate_fft_frequency
+from src.processing.main import get_separated_seismic_waves, calculate_fft_frequency
 
 # Example usage
 event_params = {
@@ -96,7 +96,7 @@ freq, l_fft, q_fft, t_fft = calculate_fft_frequency(l_component, q_component, t_
 The `visualization` module provides plotting functions:
 
 ```python
-from visualization import plot_separated_components
+from src.visualization.main import plot_separated_components
 
 plot_separated_components(
     suptitle="Seismic Event Analysis",
