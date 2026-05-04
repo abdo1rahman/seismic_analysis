@@ -5,7 +5,7 @@ from src.processing.main import (
 from src.visualization.main import plot_separated_components
 
 banda_sea_quake = {
-    "client_name": "GFZ",
+    "client_name": "EARTHSCOPE",
     "event_time": "2024-09-11T16:10:00",
     "network": "IU",
     "station": "SAUI",
