@@ -239,9 +239,9 @@ def get_separated_seismic_waves(
     highcut = 6.0
     order = 4
     b, a = butter(order, [lowcut / (0.5 * fs), highcut / (0.5 * fs)], btype="band")
-    l = filtfilt(b, a, l)
-    q = filtfilt(b, a, q)
-    t = filtfilt(b, a, t)
+    l = filtfilt(b, a, l)  # P-Wave component
+    q = filtfilt(b, a, q)  # S-Wave component
+    t = filtfilt(b, a, t)  # Surface wave component
 
     # Create time axis for plotting/analysis
     times = st[0].times()
