@@ -36,4 +36,4 @@ dependencies = [
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["processing*", "visualization*"]
+include = ["processing*", "visualization*", "FILTER_DESIGN*"]
