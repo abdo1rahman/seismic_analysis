@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.io import wavfile
 
 
 def least_squares_bandpass(x, lowcut, highcut, fs=20050, order=4):
@@ -75,3 +76,43 @@ def least_squares_bandpass(x, lowcut, highcut, fs=20050, order=4):
             y[k:] += h[k] * x[:-k]
 
     return y, h
+
+
+def save_audio(filename, signal_data, sampling_rate):
+    # Normalize the signal to fit between -1.0 and 1.0 to prevent audio clipping
+    max_val = np.max(np.abs(signal_data))
+    if max_val > 0:
+        normalized = signal_data / max_val
+    else:
+        normalized = signal_data
+
+    # Convert to 16-bit PCM integers
+    audio_int16 = (normalized * 32767).astype(np.int16)
+
+    # Write out the WAV file
+    wavfile.write(filename, sampling_rate, audio_int16)
+    print(f"Saved: {filename}")
+
+
+if __name__ == "__main__":
+    # Generate a test audio signal at 20050 Hz sampling rate
+    fs_rate = 20050
+    t = np.linspace(0, 1.0, fs_rate, endpoint=False)
+
+    # Mix three frequencies: 100 Hz (low), 1500 Hz (mid target), 8000 Hz (high noise)
+    signal_low = np.sin(2 * np.pi * 100 * t)
+    signal_mid = np.sin(2 * np.pi * 1500 * t)
+    signal_high = np.sin(2 * np.pi * 8000 * t)
+    input_signal = signal_low + signal_mid + signal_high
+
+    # Apply our custom Least Squares Filter from scratch
+    # Passband setup to isolate the 1500 Hz target signal
+    filtered_signal, computed_taps = least_squares_bandpass(
+        x=input_signal, lowcut=1000, highcut=2000, fs=fs_rate, order=4
+    )
+
+    print("Computed 5-tap Filter Coefficients:")
+    print(computed_taps)
+    print("\nFiltered Output Shape matches Input:", filtered_signal.shape)
+    save_audio("before_filter.wav", input_signal, fs_rate)
+    save_audio("after_filter.wav", filtered_signal, fs_rate)

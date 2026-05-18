@@ -1,6 +1,5 @@
 from manim import *
 import numpy as np
-import subprocess
 
 # Define signals
 noisy_fn = lambda x: np.sin(x) + 0.5 * np.sin(3 * x) + 0.25 * np.sin(5 * x)
@@ -95,7 +94,3 @@ class SignalFilter(Scene):
         # Fade out the line once done
         self.play(FadeOut(filter_line), FadeOut(line_label))
         self.wait(2)
-
-
-if __name__ == "__main__":
-    subprocess.run(["manim", "-pqh", "test.py", "SignalFilter"])
