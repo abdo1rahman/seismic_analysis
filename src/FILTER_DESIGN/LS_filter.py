@@ -1,5 +1,7 @@
 import numpy as np
 from scipy.io import wavfile
+from scipy.signal import freqz
+import matplotlib.pyplot as plt
 
 
 def least_squares_bandpass(x, lowcut, highcut, fs=20050, order=4):
@@ -116,3 +118,50 @@ if __name__ == "__main__":
     print("\nFiltered Output Shape matches Input:", filtered_signal.shape)
     save_audio("before_filter.wav", input_signal, fs_rate)
     save_audio("after_filter.wav", filtered_signal, fs_rate)
+
+    # Plotting the impulse response and magnitude response
+    fs = 20050
+    lowcut = 2000
+    highcut = 5000
+
+    # Extract filter coefficients using a dummy input signal
+    _, h = least_squares_bandpass(np.zeros(10), lowcut, highcut, fs=fs)
+
+    # Create the figure
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8))
+
+    # 1. Plot Impulse Response
+    ax1.stem(range(len(h)), h, basefmt="C3-")
+    ax1.set_title("Impulse Response $h[n]$ (Order 4 FIR)")
+    ax1.set_xlabel("Sample Index ($n$)")
+    ax1.set_ylabel("Amplitude")
+    ax1.set_xticks(range(5))
+    ax1.grid(True, linestyle="--", alpha=0.7)
+
+    # 2. Compute and Plot Transfer Characteristics
+    frequencies, response = freqz(h, worN=2000, fs=fs)
+
+    ax2.plot(
+        frequencies,
+        np.abs(response),
+        "b-",
+        linewidth=2,
+        label="Actual Magnitude Response",
+    )
+    ax2.axvspan(
+        lowcut,
+        highcut,
+        color="green",
+        alpha=0.15,
+        label=f"Desired Passband ({lowcut}-{highcut} Hz)",
+    )
+    ax2.set_title("Transfer Characteristics (Frequency Response Magnitude)")
+    ax2.set_xlabel("Frequency (Hz)")
+    ax2.set_ylabel("Absolute Gain")
+    ax2.set_xlim(0, fs / 2)
+    ax2.set_ylim(0, 1.2)
+    ax2.grid(True, linestyle="--", alpha=0.7)
+    ax2.legend()
+
+    plt.tight_layout()
+    plt.show()
