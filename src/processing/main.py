@@ -14,10 +14,10 @@ aomori_earthquake_time = "2025-12-08T14:17:00"
 def fetch_seismic_data(
     network: str,
     station: str,
-    channel: str,
     starttime: str,
     time_range: int,
     location: str = "*",
+    channel: str = "BH*",
 ):
     client = Client("EARTHSCOPE")  # Using EARTHSCOPE FDSN client
     starttime = UTCDateTime(starttime)
@@ -34,68 +34,6 @@ def fetch_seismic_data(
     except Exception as e:
         print(f"Error fetching data.\nSeismic servers might be down: {e}")
         exit(1)
-
-
-def plot_event(
-    title: str, starttim: str, time_range, network: str, station: str, channel: str
-):
-    # Cut-off frequencies to allow P-waves and S-waves to pass through
-    cut_low = 0.5  # Hz
-    cut_high = 6  # Hz
-
-    stream = fetch_seismic_data(network, station, channel, starttim, time_range)
-
-    stream_raw = stream.copy()
-    stream.filter("bandpass", freqmin=cut_low, freqmax=cut_high)
-
-    # Convert to NumPy
-    data = stream_raw[0].data
-    times = stream_raw[0].times()
-    data_fft = np.fft.fft(data)
-
-    data_filtered = stream[0].data
-    data_filtered_fft = np.fft.fft(data_filtered)
-
-    freq = np.fft.fftfreq(len(data), d=stream_raw[0].stats.delta)[: len(data) // 2]
-
-    # plotting with Matplotlib
-    plt.figure(figsize=(12, 6))
-    plt.suptitle(f"Seismic Event: {title}")
-
-    plt.subplot(2, 2, 1)
-    plt.plot(times, data, color="blue")
-    plt.title("Seismic Waveform")
-    plt.xlabel("Time (s)")
-    plt.ylabel("Amplitude")
-    plt.grid()
-
-    plt.subplot(2, 2, 2)
-    plt.plot(freq, np.abs(data_fft)[: len(data_fft) // 2], color="red")
-    plt.title("FFT of Seismic Waveform")
-    plt.xlabel("Frequency (Hz)")
-    plt.ylabel("Magnitude")
-    plt.grid()
-
-    plt.subplot(2, 2, 3)
-    plt.plot(times, data_filtered, color="green")
-    plt.title("Filtered Seismic Waveform")
-    plt.xlabel("Time (s)")
-    plt.ylabel("Amplitude")
-    plt.grid()
-
-    plt.subplot(2, 2, 4)
-    plt.plot(
-        freq,
-        np.abs(data_filtered_fft)[: len(data_filtered_fft) // 2],
-        color="red",
-    )
-    plt.title("FFT of Filtered Seismic Waveform")
-    plt.xlabel("Frequency (Hz)")
-    plt.ylabel("Magnitude")
-    plt.grid()
-
-    plt.tight_layout()
-    plt.show()
 
 
 def compare_events(

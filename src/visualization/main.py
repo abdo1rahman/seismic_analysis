@@ -64,15 +64,24 @@ def plot_separated_components(
     plt.show()
 
 
-def plot_event(
-    title: str,
-    times: np.ndarray,
-    data: np.ndarray,
-    freq: np.ndarray,
-    data_fft: np.ndarray,
-    data_filtered: np.ndarray,
-    data_filtered_fft: np.ndarray,
-):
+def plot_event(title: str, stream: any):
+    # Cut-off frequencies to allow P-waves and S-waves to pass through
+    cut_low = 0.5  # Hz
+    cut_high = 6  # Hz
+
+    stream_raw = stream.copy()
+    stream.filter("bandpass", freqmin=cut_low, freqmax=cut_high)
+
+    # Convert to NumPy
+    data = stream_raw[0].data
+    times = stream_raw[0].times()
+    data_fft = np.fft.fft(data)
+
+    data_filtered = stream[0].data
+    data_filtered_fft = np.fft.fft(data_filtered)
+
+    freq = np.fft.fftfreq(len(data), d=stream_raw[0].stats.delta)[: len(data) // 2]
+
     # plotting with Matplotlib
     plt.figure(figsize=(12, 6))
     plt.suptitle(f"Seismic Event: {title}")
